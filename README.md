@@ -33,5 +33,5 @@ qb-lock: qb-lock: https://github.com/M-Middy/qb-lock
 <img src="https://i.imgur.com/9bPNKDh.jpg" alt="pp2-stealparkmeter-3" width="400"/>
 <img src="https://i.imgur.com/Q62H19F.jpg" alt="pp2-stealparkmeter-4" width="400"/>
 <img src="https://i.imgur.com/JDEQpMM.jpg" alt="pp2-stealparkmeter-5" width="400"/>
-<img src="https://i.imgur.com/J7X9TfR.jpg" alt="pp2-stealparkmeter-5" width="200"/>
+<img src="https://i.imgur.com/J7X9TfR.jpg" alt="pp2-stealparkmeter-5" width="400"/>
 </p>
