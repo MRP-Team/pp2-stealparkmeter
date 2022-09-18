@@ -1,0 +1,10 @@
+Config = {}
+Config.extractTime = 14000 -- seconds it takes to remove money from meter
+Config.meterDistance = 1.0 -- distance from meter
+Config.policeCallInActionStart = true -- call police when player start stealing
+Config.policeCallInActionEnd = true -- call police when player end stealing
+Config.policeCallInActionFail = true -- call police when player fail stealing
+Config.stealRequiredItem = "advancedlockpick" -- item required to start stealing
+Config.stealableModels = {-1940238623, 2108567945} -- stealableModels in fivem
+Config.MinMarkedMoneyWorth = 10
+Config.MaxMarkedMoneyWorth = 100
