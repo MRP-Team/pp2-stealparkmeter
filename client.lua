@@ -1,4 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
+local stealedMeters = {}
 
 local function PoliceCall()
   local chance = 75
@@ -9,15 +10,6 @@ local function PoliceCall()
     TriggerServerEvent('police:server:policeAlert', Lang:t("stealmeter.police_notification"))
     QBCore.Functions.Notify(Lang:t("stealmeter.police_notified"), 'error')
   end
-end
-
-local function RemoveMeterFromScene(entity)
-  NetworkRegisterEntityAsNetworked(entity)
-  Wait(100)
-  NetworkRequestControlOfEntity(entity)
-  SetEntityAsMissionEntity(entity)
-  Wait(100)
-  DeleteEntity(entity)
 end
 
 local function startStealingMeter(entity)
@@ -34,10 +26,11 @@ local function startStealingMeter(entity)
     if DoesEntityExist(entity) then
       local pos = GetEntityCoords(entity)
       local objectCoords = pos.x .. pos.y .. pos.z
-      TriggerServerEvent("pp2-stealparkmeter:server:stealedmeter", objectCoords)
-      RemoveMeterFromScene(entity)
-      QBCore.Functions.Notify(Lang:t("stealmeter.meter_stolen"), "primary")
-      if Config.policeCallInActionEnd then PoliceCall() end
+      if not stealedMeters[objectCoords] then
+        TriggerServerEvent("pp2-stealparkmeter:server:stealedmeter", objectCoords, pos)
+        QBCore.Functions.Notify(Lang:t("stealmeter.meter_stolen"), "primary")
+        if Config.policeCallInActionEnd then PoliceCall() end
+      end
     end
   end, function()
     Lang:t("stealmeter.stealing_animation_canceled")
@@ -71,21 +64,35 @@ RegisterNetEvent("pp2-stealparkmeter:client:steal", function(entity)
   local objectCoords = pos.x .. pos.y .. pos.z
 	QBCore.Functions.TriggerCallback('pp2-stealparkmeter:server:getmeter', function(occupied)
 		if occupied then
-      RemoveMeterFromScene(entity)
 			QBCore.Functions.Notify(Lang:t("stealmeter.already_stolen_error"), 'error')
 		else
       if Config.policeCallInActionStart then PoliceCall() end
-      local success = exports['qb-lock']:StartLockPickCircle(2,30)
-      if success then
-        success = exports['qb-lock']:StartLockPickCircle(4,10)
+      exports['ps-ui']:Circle(function(success)
         if success then
           startStealingMeter(entity)
         end
-      end
-      if not success then
-        if Config.policeCallInActionFail then PoliceCall() end
-        QBCore.Functions.Notify(Lang:t("stealmeter.messed_up_error"), 'error')
-      end
+        if not success then
+          if Config.policeCallInActionFail then PoliceCall() end
+          QBCore.Functions.Notify(Lang:t("stealmeter.messed_up_error"), 'error')
+        end
+      end, 5, 20)
 		end
 	end, objectCoords)
+end)
+
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+  TriggerServerEvent('pp2-stealparkmeter:server:playerSpawned')
+end)
+
+RegisterNetEvent('pp2-stealparkmeter:client:reloadStealedMeters', function(s)
+  stealedMeters = s
+end)
+
+Citizen.CreateThread(function ()
+  while true do
+    Citizen.Wait(0)
+    for entityId, entityPos in pairs(stealedMeters) do
+      DrawMarker(20, entityPos.x, entityPos.y, entityPos.z+2.0, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 50, 1, 1, 2, 0, 0)	
+    end
+  end
 end)

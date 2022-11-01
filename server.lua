@@ -1,19 +1,22 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local boxStolen = {}
 
-local function giveStealedMoneyToPlayer()
+local function giveStealedMoneyToPlayer(objectCoords)
   local src = source
   local Player = QBCore.Functions.GetPlayer(src)
-  local info = {
-      worth = math.random(Config.MinMarkedMoneyWorth, Config.MaxMarkedMoneyWorth)
-  }
-  Player.Functions.AddItem('markedbills', 1, false, info)
-  TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
+  local stealedAmount = math.random(Config.MinMoneyWorth, Config.MaxMoneyWorth)
+  Player.Functions.AddMoney('cash', stealedAmount, 'stealed parkmeter ' .. objectCoords);
 end
 
-RegisterServerEvent('pp2-stealparkmeter:server:stealedmeter', function(objectCoords)
-	boxStolen[objectCoords] = true
-  giveStealedMoneyToPlayer()
+RegisterServerEvent('pp2-stealparkmeter:server:stealedmeter', function(objectCoords, pos)
+	boxStolen[objectCoords] = pos
+  giveStealedMoneyToPlayer(objectCoords)
+  TriggerClientEvent('pp2-stealparkmeter:client:reloadStealedMeters', -1, boxStolen)
+end)
+
+RegisterServerEvent('pp2-stealparkmeter:server:playerSpawned', function()
+  local src = source
+  TriggerClientEvent('pp2-stealparkmeter:client:reloadStealedMeters', src, boxStolen)
 end)
 
 QBCore.Functions.CreateCallback('pp2-stealparkmeter:server:getmeter', function(source, cb, objectCoords)
