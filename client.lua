@@ -92,7 +92,7 @@ Citizen.CreateThread(function ()
   while true do
     Citizen.Wait(0)
     for entityId, entityPos in pairs(stealedMeters) do
-      DrawMarker(20, entityPos.x, entityPos.y, entityPos.z+2.0, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 50, 1, 1, 2, 0, 0)	
+      DrawMarker(29, entityPos.x, entityPos.y, entityPos.z+1.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 50, 0, 1, 2, 0, 0)	
     end
   end
 end)
