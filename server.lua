@@ -12,6 +12,12 @@ RegisterServerEvent('pp2-stealparkmeter:server:stealedmeter', function(objectCoo
 	boxStolen[objectCoords] = pos
   giveStealedMoneyToPlayer(objectCoords)
   TriggerClientEvent('pp2-stealparkmeter:client:reloadStealedMeters', -1, boxStolen)
+
+  CreateThread(function()
+    Wait(Config.cooldownTimer)
+    boxStolen[objectCoords] = nil
+    TriggerClientEvent('pp2-stealparkmeter:client:reloadStealedMeters', -1, boxStolen)
+  end)
 end)
 
 RegisterServerEvent('pp2-stealparkmeter:server:playerSpawned', function()

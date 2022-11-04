@@ -12,6 +12,15 @@ local function PoliceCall()
   end
 end
 
+local function RemoveMeterFromScene(entity)
+  NetworkRegisterEntityAsNetworked(entity)
+  Wait(100)
+  NetworkRequestControlOfEntity(entity)
+  SetEntityAsMissionEntity(entity)
+  Wait(100)
+  DeleteEntity(entity)
+end
+
 local function startStealingMeter(entity)
   QBCore.Functions.Progressbar("stealingMeter", Lang:t("stealmeter.stealing_animation_label"), Config.extractTime, false, true, {
     disableMovement = true,
@@ -39,12 +48,12 @@ end
 
 CreateThread(function()
   exports['qb-target']:AddTargetModel(
-    Config.stealableModels, 
+    Config.parkMeterModels,
     {
       options = {
         {
-          targeticon = 'fa-solid fa-screwdriver-wrench', 
-          icon = "fas fa-mask",
+          targeticon = 'fa-solid fa-screwdriver-wrench',
+          icon = "fas fa-sack-dollar",
           type = "client",
           action = function(entity)
             if IsPedAPlayer(entity) then return false end
@@ -90,9 +99,26 @@ end)
 
 Citizen.CreateThread(function ()
   while true do
-    Citizen.Wait(0)
+    if Config.parkMeterRemoveOnSteal then
+      Citizen.Wait(1000)
+    else
+      Citizen.Wait(0)
+    end
+    local ped = PlayerPedId()
+    local coords = GetEntityCoords(ped)
     for entityId, entityPos in pairs(stealedMeters) do
-      DrawMarker(20, entityPos.x, entityPos.y, entityPos.z+2.0, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 255, 0, 0, 50, 1, 1, 2, 0, 0)	
+      if entityPos and #(coords - entityPos) < Config.parkMeterRemoveDistance then
+        if Config.parkMeterRemoveOnSteal then
+          for i = 1, #Config.parkMeterModels do
+            local parkMeter = GetClosestObjectOfType(entityPos.x, entityPos.y, entityPos.z, 0.75, Config.parkMeterModels[i], false, false, false)
+            if DoesEntityExist(parkMeter) then
+              RemoveMeterFromScene(parkMeter)
+            end
+          end
+        else
+          DrawMarker(5, entityPos.x, entityPos.y, entityPos.z+1.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 50, 0, 1, 2, 0, 0)
+        end
+      end
     end
   end
 end)
