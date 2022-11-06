@@ -1,5 +1,11 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local stealedMeters = {}
+local CurrentCops = 0
+
+RegisterNetEvent('police:SetCopCount')
+AddEventHandler('police:SetCopCount', function(amount)
+    CurrentCops = amount
+end)
 
 local function PoliceCall()
   local chance = 75
@@ -21,7 +27,21 @@ local function RemoveMeterFromScene(entity)
   DeleteEntity(entity)
 end
 
+function makeEntityFaceEntity(entity1, entity2)
+  local p1 = GetEntityCoords(entity1, true)
+  local p2 = GetEntityCoords(entity2, true)
+
+  local dx = p2.x - p1.x
+  local dy = p2.y - p1.y
+
+  local heading = GetHeadingFromVector_2d(dx, dy)
+  SetEntityHeading(entity1, heading)
+end
+
 local function startStealingMeter(entity)
+  local ped = PlayerPedId()
+  ClearPedTasks(ped)
+  makeEntityFaceEntity(ped, entity)
   QBCore.Functions.Progressbar("stealingMeter", Lang:t("stealmeter.stealing_animation_label"), Config.extractTime, false, true, {
     disableMovement = true,
     disableCarMovement = true,
@@ -74,17 +94,23 @@ RegisterNetEvent("pp2-stealparkmeter:client:steal", function(entity)
 	QBCore.Functions.TriggerCallback('pp2-stealparkmeter:server:getmeter', function(occupied)
 		if occupied then
 			QBCore.Functions.Notify(Lang:t("stealmeter.already_stolen_error"), 'error')
+    elseif CurrentCops < Config.requiredCopsCount then
+			QBCore.Functions.Notify(Lang:t("stealmeter.not_enough_cops"), 'error')
 		else
       if Config.policeCallInActionStart then PoliceCall() end
-      exports['ps-ui']:Circle(function(success)
+      TriggerEvent('qb-lockpick:client:openLockpick', function(success)
         if success then
           startStealingMeter(entity)
         end
         if not success then
+          local chance = math.random(1, 100)
+          if chance <= Config.RemoveRequiredItemChance then
+            TriggerServerEvent("pp2-stealparkmeter:server:breakRequiredItem")
+          end
           if Config.policeCallInActionFail then PoliceCall() end
           QBCore.Functions.Notify(Lang:t("stealmeter.messed_up_error"), 'error')
         end
-      end, 5, 20)
+      end)
 		end
 	end, objectCoords)
 end)

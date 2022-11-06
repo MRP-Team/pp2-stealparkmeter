@@ -4,6 +4,7 @@ local Translations = {
     ["stealing_animation_label"] = "STEALING METER...",
     ["stealing_animation_canceled"] = "You canceled the action",
     ["already_stolen_error"] = "Someone already stole here",
+    ["not_enough_cops"] = "You can't, Not enough police in town",
     ["messed_up_error"] = "YOU MESSED UP!!!",
     ["meter_stolen"] = "You stole the money",
     ["police_notification"] = "Parking meter steal in pogress",
