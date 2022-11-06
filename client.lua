@@ -97,6 +97,7 @@ RegisterNetEvent("pp2-stealparkmeter:client:steal", function(entity)
     elseif CurrentCops < Config.requiredCopsCount then
 			QBCore.Functions.Notify(Lang:t("stealmeter.not_enough_cops"), 'error')
 		else
+      TriggerServerEvent('hud:server:GainStress', math.random(Config.MinStress, Config.MaxStress)) -- Gain stress.
       if Config.policeCallInActionStart then PoliceCall() end
       TriggerEvent('qb-lockpick:client:openLockpick', function(success)
         if success then

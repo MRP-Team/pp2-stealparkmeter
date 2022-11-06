@@ -13,3 +13,5 @@ Config.cooldownTimer = 60 * 60 * 1000 -- meter cooldown to be stolen again
 Config.parkMeterRemoveOnSteal = false -- if false a marker will be shown in place
 Config.parkMeterRemoveDistance = 50 -- distance to, show stolen marker, or remove meter entity
 Config.RemoveRequiredItemChance = 50 -- remove item if fail, value between 1 and 100 (100 item will always be removed, 0 item will never be removed)
+Config.MinStress = 1 -- minimum amount of stress to Gain
+Config.MaxStress = 4 -- maximum amount of stress to Gain
