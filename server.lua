@@ -20,6 +20,15 @@ RegisterServerEvent('pp2-stealparkmeter:server:stealedmeter', function(objectCoo
   end)
 end)
 
+
+RegisterNetEvent('pp2-stealparkmeter:server:breakRequiredItem', function()
+  local Player = QBCore.Functions.GetPlayer(source)
+  if not Player then return end
+  if Player.Functions.RemoveItem(Config.stealRequiredItem, 1) then
+    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Config.stealRequiredItem], "remove")
+  end
+end)
+
 RegisterServerEvent('pp2-stealparkmeter:server:playerSpawned', function()
   local src = source
   TriggerClientEvent('pp2-stealparkmeter:client:reloadStealedMeters', src, boxStolen)
