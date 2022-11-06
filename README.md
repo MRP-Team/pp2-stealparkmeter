@@ -1,5 +1,5 @@
 # pp2-stealparkmeter
-Simple parking meters robbery, another illegal way to get money ;)
+Simple parking meters robbery, another illegal way to get money and gain stress ;)
 
 # Config
 ```
@@ -27,7 +27,7 @@ qb-target: https://github.com/qbcore-framework/qb-target
 
 qb-policejob: https://github.com/qbcore-framework/qb-policejob
 
-ps-ui: https://github.com/Project-Sloth/ps-ui.git
+qb-lockpick: https://github.com/qbcore-framework/qb-lockpick
 
 # Installation:
 1- Copy pp2-stealparkmeter in ressources
