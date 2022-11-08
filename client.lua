@@ -39,9 +39,6 @@ function makeEntityFaceEntity(entity1, entity2)
 end
 
 local function startStealingMeter(entity)
-  local ped = PlayerPedId()
-  ClearPedTasks(ped)
-  makeEntityFaceEntity(ped, entity)
   QBCore.Functions.Progressbar("stealingMeter", Lang:t("stealmeter.stealing_animation_label"), Config.extractTime, false, true, {
     disableMovement = true,
     disableCarMovement = true,
@@ -92,18 +89,29 @@ RegisterNetEvent("pp2-stealparkmeter:client:steal", function(entity)
   local pos = GetEntityCoords(entity)
   local objectCoords = pos.x .. pos.y .. pos.z
 	QBCore.Functions.TriggerCallback('pp2-stealparkmeter:server:getmeter', function(occupied)
+    local ped = PlayerPedId()
+    makeEntityFaceEntity(ped, entity)
+    Citizen.Wait(1000)
 		if occupied then
 			QBCore.Functions.Notify(Lang:t("stealmeter.already_stolen_error"), 'error')
     elseif CurrentCops < Config.requiredCopsCount then
 			QBCore.Functions.Notify(Lang:t("stealmeter.not_enough_cops"), 'error')
 		else
+      ClearPedTasks(ped)
+      local animDict = "mini@repair"
+      local animName = "fixing_a_player"
+      RequestAnimDict(animDict)
+      while not HasAnimDictLoaded(animDict) do
+        Citizen.Wait(100)
+      end
+      TaskPlayAnim(ped, animDict, animName, 1.0, 1.0, 1.0, 1, 0.0, 0, 0, 0)
       TriggerServerEvent('hud:server:GainStress', math.random(Config.MinStress, Config.MaxStress)) -- Gain stress.
       if Config.policeCallInActionStart then PoliceCall() end
       TriggerEvent('qb-lockpick:client:openLockpick', function(success)
+        ClearPedTasks(ped)
         if success then
           startStealingMeter(entity)
-        end
-        if not success then
+        else
           local chance = math.random(1, 100)
           if chance <= Config.RemoveRequiredItemChance then
             TriggerServerEvent("pp2-stealparkmeter:server:breakRequiredItem")
